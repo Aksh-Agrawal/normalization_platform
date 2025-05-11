@@ -200,26 +200,110 @@ class UnifiedRankingSystem:
             ))
         return rankings[:top_n] if top_n else rankings
 
-
-def run():
+if __name__ == "__main__":
     ranking_system = UnifiedRankingSystem()
+    
+    # Add platforms
+    ranking_system.add_platform("Codeforces", max_rating=3000)
+    ranking_system.add_platform("Leetcode", max_rating=2500)
+    ranking_system.add_platform("Atcoder", max_rating=2800)
+    ranking_system.add_platform("CodeChef", max_rating=1800)
+    
+    # Update platform statistics
+    ranking_system.update_platform_stats(
+        "Codeforces", 
+        difficulty=2100, 
+        participation=0.8, 
+        current_ratings={
+            "user1": 1900,
+            "user2": 2100,
+            "user3": 2400
+        }
+    )
+    
+    ranking_system.update_platform_stats(
+        "Leetcode", 
+        difficulty=1800, 
+        participation=0.9, 
+        current_ratings={
+            "user1": 2000,
+            "user2": 1900,
+            "user4": 2200
+        }
+    )
+    
+    ranking_system.update_platform_stats(
+        "Atcoder", 
+        difficulty=2000, 
+        participation=0.7, 
+        current_ratings={
+            "user1": 1800,
+            "user3": 2000,
+            "user5": 2300
+        }
+    )
 
+    ranking_system.update_platform_stats(
+        "CodeChef", 
+        difficulty=1, 
+        participation=0.2, 
+        current_ratings={"user5": 1800}
+    )
+    
+    # Add course completions
+    ranking_system.update_course_completions(
+        course_id="cs101",
+        name="DSA Fundamentals",
+        source="IIT",
+        topic="DSA",
+        completion_date=datetime.now() - timedelta(days=30),
+        user_ids=["user1", "user2", "user3"]
+    )
+    
+    ranking_system.update_course_completions(
+        course_id="ai202",
+        name="AI Bootcamp",
+        source="Coursera",
+        topic="AI",
+        completion_date=datetime.now() - timedelta(days=180),
+        user_ids=["user1", "user4"]
+    )
+    
+    ranking_system.update_course_completions(
+        course_id="web303",
+        name="Web Development",
+        source="Udemy",
+        topic="Web Dev",
+        completion_date=datetime.now() - timedelta(days=10),
+        user_ids=["user5"]
+    )
+    
+    # Display rankings
+    print("Final Rankings:")
+    print(f"{'Rank':<5} {'User ID':<10} {'Platform Rating':<15} {'Course Bonus':<15} {'Total Rating':<15}")
+    for i, (user_id, platform, course, total) in enumerate(ranking_system.get_rankings(), 1):
+        print(f"{i:<5} {user_id:<10} {platform:<15.1f} {course:<15.1f} {total:<15.1f}")
+
+
+
+def main():
     handle = input("Enter Codeforces handle: ")
     profile_data = fetch_codeforces_profile_api(handle)
-
+    
     if not profile_data or profile_data["rating"] == 'N/A':
         print("Could not retrieve valid rating. Exiting.")
         return
 
     cf_rating = int(profile_data["rating"])
 
-    # Add platforms
+    # Initialize system
+    ranking_system = UnifiedRankingSystem()
     ranking_system.add_platform("Codeforces", max_rating=3000)
     ranking_system.add_platform("Leetcode", max_rating=2500)
     ranking_system.add_platform("Atcoder", max_rating=2800)
     ranking_system.add_platform("CodeChef", max_rating=1800)
 
-    # Update Codeforces with real rating
+    # Update only Codeforces with live data
     ranking_system.update_platform_stats(
         "Codeforces",
         difficulty=2100,
@@ -227,7 +311,7 @@ def run():
         current_ratings={handle: cf_rating}
     )
 
-    # Placeholder stats for other platforms
+    # Placeholder data for other platforms
     for p in ["Leetcode", "Atcoder", "CodeChef"]:
         ranking_system.update_platform_stats(
             p,
@@ -241,7 +325,3 @@ def run():
     print(f"{'Rank':<5} {'User ID':<10} {'Platform Rating':<15} {'Course Bonus':<15} {'Total Rating':<15}")
     for i, (user_id, platform, course, total) in enumerate(ranking_system.get_rankings(), 1):
         print(f"{i:<5} {user_id:<10} {platform:<15.1f} {course:<15.1f} {total:<15.1f}")
-    print("End of Rankings")
-
-if __name__ == "__main__":
-    run()
