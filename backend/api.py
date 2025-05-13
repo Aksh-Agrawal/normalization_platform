@@ -24,3 +24,17 @@ def fetch_codeforces_profile_api(handle):
     except requests.RequestException as e:
         print(f"Error fetching profile via API: {e}")
         return None
+
+
+def print_profile(profile):
+    """Print the Codeforces rating"""
+    if not profile:
+        print("Unable to fetch Codeforces profile.")
+    else:
+        print(f"Codeforces Rating: {profile['rating']}")
+
+
+if __name__ == "__main__":
+    handle = input("Enter Codeforces handle: ")
+    profile = fetch_codeforces_profile_api(handle)
+    print_profile(profile)

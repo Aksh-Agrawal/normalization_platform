@@ -2,18 +2,30 @@
 
 from platform import UnifiedRankingSystem
 from api import fetch_codeforces_profile_api
+from leetcode_api import fetch_leetcode_profile
 
 def run():
     ranking_system = UnifiedRankingSystem()
 
-    handle = input("Enter Codeforces handle: ")
-    profile_data = fetch_codeforces_profile_api(handle)
+    handle_CF = input("Enter Codeforces handle_CF: ")
+    profile_data_CF = fetch_codeforces_profile_api(handle_CF)
 
-    if not profile_data or profile_data["rating"] == 'N/A':
+    if not profile_data_CF or profile_data_CF["rating"] == 'N/A':
         print("Could not retrieve valid Codeforces rating. Exiting.")
         return
 
-    cf_rating = int(profile_data["rating"])
+    cf_rating = int(profile_data_CF["rating"])
+    print(f"Codeforces Rating: {cf_rating}")
+
+    # Fetch Leetcode profile
+    handle_LC = input("Enter Leetcode handle_LC: ")
+    profile_data_LC = fetch_leetcode_profile(handle_LC)
+    if not profile_data_LC or profile_data_LC["rating"] == 'N/A':
+        print("Could not retrieve valid Leetcode rating. Exiting.")
+        return
+    lc_rating = int(profile_data_LC["rating"])
+    print(f"Leetcode Rating: {lc_rating}")
+    
 
     # Add all platforms
     ranking_system.add_platform("Codeforces", max_rating=3000)
@@ -26,18 +38,24 @@ def run():
         "Codeforces",
         difficulty=2100,
         participation=0.8,
-        current_ratings={handle: cf_rating}
+            current_ratings={handle_CF: cf_rating}
+        )
+    ranking_system.update_platform_stats(
+            "Leetcode",
+        difficulty=2100,
+        participation=0.8,
+        current_ratings={handle_LC: lc_rating}
     )
 
     # Dummy ratings for other platforms
     dummy_ratings = {
-        "Leetcode": {handle: 3200},
-        "Atcoder": {handle: 3300},
-        "CodeChef": {handle: 3700}
+        # "Leetcode": {handle_CF: 3200},
+        "Atcoder": {handle_CF: 3300},
+        "CodeChef": {handle_CF: 3700}
     }
 
     platform_difficulty_participation = {
-        "Leetcode": (3400, 0.7),
+       
         "Atcoder": (3500, 0.6),
         "CodeChef": (3800, 0.5)
     }
@@ -58,3 +76,5 @@ def run():
 
 if __name__ == "__main__":
     run()
+
+    # user - orzdevinwang
