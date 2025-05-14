@@ -1,11 +1,14 @@
 # main.py
 
 from platform import UnifiedRankingSystem
-from api import fetch_codeforces_profile_api
+from CodeForces_api import fetch_codeforces_profile_api
 from leetcode_api import fetch_leetcode_profile
+from CodeChef_api import fetch_codechef_profile
 
 def run():
     ranking_system = UnifiedRankingSystem()
+
+    # Fetch CodeForces profile
 
     handle_CF = input("Enter Codeforces handle_CF: ")
     profile_data_CF = fetch_codeforces_profile_api(handle_CF)
@@ -18,6 +21,7 @@ def run():
     print(f"Codeforces Rating: {cf_rating}")
 
     # Fetch Leetcode profile
+    
     handle_LC = input("Enter Leetcode handle_LC: ")
     profile_data_LC = fetch_leetcode_profile(handle_LC)
     if not profile_data_LC or profile_data_LC["rating"] == 'N/A':
@@ -25,6 +29,15 @@ def run():
         return
     lc_rating = int(profile_data_LC["rating"])
     print(f"Leetcode Rating: {lc_rating}")
+
+    # Fetch CodeChef profile
+    handle_CC = input("Enter CodeChef handle_CC: ")
+    profile_data_CC = fetch_codechef_profile(handle_CC)
+    if not profile_data_CC or profile_data_CC["rating"] == 'N/A':
+        print("Could not retrieve valid CodeChef rating. Exiting.")
+        return
+    cc_rating = int(profile_data_CC["rating"])
+    print(f"CodeChef Rating: {cc_rating}")
     
 
     # Add all platforms
@@ -46,18 +59,24 @@ def run():
         participation=0.8,
         current_ratings={handle_LC: lc_rating}
     )
+    ranking_system.update_platform_stats(
+            "CodeChef",
+        difficulty=3100,
+        participation=0.5,
+        current_ratings={handle_LC: cc_rating}
+    )
 
     # Dummy ratings for other platforms
     dummy_ratings = {
         # "Leetcode": {handle_CF: 3200},
         "Atcoder": {handle_CF: 3300},
-        "CodeChef": {handle_CF: 3700}
+        # "CodeChef": {handle_CF: 3700}
     }
 
     platform_difficulty_participation = {
        
         "Atcoder": (3500, 0.6),
-        "CodeChef": (3800, 0.5)
+        
     }
 
     for platform, (difficulty, participation) in platform_difficulty_participation.items():
